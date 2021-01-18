@@ -6,7 +6,7 @@ SOURCE_BRANCH=$2
 DESTINATION_REPO=$3
 DESTINATION_BRANCH=$4
 
-if [[ $SOURCE_REPO = '.' ]] && [[ ! -d ".git" ]] ; then
+if [[ $SOURCE_REPO = '.' ]] && [[ ! -d ".git" ]]; then
     echo "Source repo not found, check config or if previous step actions/checkout@v2 is set"
     exit 1
 elif ! echo $SOURCE_REPO | grep -Eq ':|@|\.git\/?$'; then
@@ -30,7 +30,9 @@ fi
 echo "SOURCE=$SOURCE_REPO:$SOURCE_BRANCH"
 echo "DESTINATION=$DESTINATION_REPO:$DESTINATION_BRANCH"
 
-if [[ -n "$SOURCE_SSH_PRIVATE_KEY" ]]; then
+if [[ $SOURCE_REPO = '.' ]] ; then
+    echo "Skipping source repo cloning"
+elif [[ -n "$SOURCE_SSH_PRIVATE_KEY" ]]; then
   # Clone using source ssh key if provided
   git clone -c core.sshCommand="/usr/bin/ssh -i ~/.ssh/src_rsa" "$SOURCE_REPO" /root/source --origin source && cd /root/source
 else
