@@ -31,6 +31,7 @@ fi
 
 echo "SOURCE=$SOURCE_REPO:$SOURCE_BRANCH"
 echo "DESTINATION=$DESTINATION_REPO:$DESTINATION_BRANCH"
+cat .git/config
 
 if [[ $SOURCE_REPO = "." ]]; then
     echo "Skipping source repo cloning"
