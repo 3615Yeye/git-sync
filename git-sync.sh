@@ -16,7 +16,7 @@ elif ! echo $SOURCE_REPO | grep -Eq ':|@|\.git\/?$'; then
     SOURCE_REPO="https://github.com/${SOURCE_REPO}.git"
   fi
 fi
-d 
+
 if ! echo $DESTINATION_REPO | grep -Eq ':|@|\.git\/?$'; then
   if [[ -n "$SSH_PRIVATE_KEY" || -n "$DESTINATION_SSH_PRIVATE_KEY" ]]; then
     DESTINATION_REPO="git@github.com:${DESTINATION_REPO}.git"
