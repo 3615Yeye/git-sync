@@ -7,7 +7,7 @@ DESTINATION_REPO=$3
 DESTINATION_BRANCH=$4
 
 echo "Debug to check number of commits in branch "
-git rev-list HEAD --count
+git rev-parse --is-shallow-repository
 
 if [[ $SOURCE_REPO = "." ]]; then
   if [[ ! -d ".git" ]]; then
