@@ -6,14 +6,17 @@ SOURCE_BRANCH=$2
 DESTINATION_REPO=$3
 DESTINATION_BRANCH=$4
 
-echo "Debug to check number of commits in branch "
-git rev-parse --is-shallow-repository
 
 if [[ $SOURCE_REPO = "." ]]; then
   if [[ ! -d ".git" ]]; then
     echo "Source repo not found, check config or if previous step actions/checkout@v2 is set"
     exit 1
   fi
+  if ${git rev-parse --is-shallow-repository}; then
+    echo "Git branch history is shallow, check if checkout is set width depth: 0"
+    exit 1
+  fi
+
 elif ! echo $SOURCE_REPO | grep -Eq ':|@|\.git\/?$'; then
   if [[ -n "$SSH_PRIVATE_KEY" || -n "$SOURCE_SSH_PRIVATE_KEY" ]]; then
     SOURCE_REPO="git@github.com:${SOURCE_REPO}.git"
