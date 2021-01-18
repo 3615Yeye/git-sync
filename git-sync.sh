@@ -8,6 +8,7 @@ DESTINATION_BRANCH=$4
 
 if [[ $SOURCE_REPO = '.' ]] && [[ ! -d ".git" ]] ; then
     echo "Source repo not found, check config or if previous step actions/checkout@v2 is set"
+    exit 1
 elif ! echo $SOURCE_REPO | grep -Eq ':|@|\.git\/?$'; then
   if [[ -n "$SSH_PRIVATE_KEY" || -n "$SOURCE_SSH_PRIVATE_KEY" ]]; then
     SOURCE_REPO="git@github.com:${SOURCE_REPO}.git"
