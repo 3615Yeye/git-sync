@@ -34,7 +34,10 @@ echo "DESTINATION=$DESTINATION_REPO:$DESTINATION_BRANCH"
 cat .git/config
 
 if [[ $SOURCE_REPO = "." ]]; then
-    echo "Skipping source repo cloning"
+  echo "Skipping source repo cloning"
+
+  # Pull all branches references down locally so subsequent commands can see them
+  git fetch origin '+refs/heads/*:refs/heads/*' --update-head-ok
 else 
   if [[ -n "$SOURCE_SSH_PRIVATE_KEY" ]]; then
     # Clone using source ssh key if provided
