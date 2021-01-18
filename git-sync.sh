@@ -34,17 +34,19 @@ echo "DESTINATION=$DESTINATION_REPO:$DESTINATION_BRANCH"
 
 if [[ $SOURCE_REPO = "." ]]; then
     echo "Skipping source repo cloning"
-elif [[ -n "$SOURCE_SSH_PRIVATE_KEY" ]]; then
-  # Clone using source ssh key if provided
-  git clone -c core.sshCommand="/usr/bin/ssh -i ~/.ssh/src_rsa" "$SOURCE_REPO" /root/source --origin source && cd /root/source
-else
-  git clone "$SOURCE_REPO" /root/source --origin source && cd /root/source
+else 
+  if [[ -n "$SOURCE_SSH_PRIVATE_KEY" ]]; then
+    # Clone using source ssh key if provided
+    git clone -c core.sshCommand="/usr/bin/ssh -i ~/.ssh/src_rsa" "$SOURCE_REPO" /root/source --origin source && cd /root/source
+  else
+    git clone "$SOURCE_REPO" /root/source --origin source && cd /root/source
+  fi
+
+  # Pull all branches references down locally so subsequent commands can see them
+  git fetch source '+refs/heads/*:refs/heads/*' --update-head-ok
 fi
 
 git remote add destination "$DESTINATION_REPO"
-
-# Pull all branches references down locally so subsequent commands can see them
-git fetch source '+refs/heads/*:refs/heads/*' --update-head-ok
 
 # Print out all branches
 git --no-pager branch -a -vv
