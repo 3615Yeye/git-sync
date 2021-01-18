@@ -1,5 +1,4 @@
 #!/bin/sh
-
 set -e
 
 SOURCE_REPO=$1
@@ -7,7 +6,15 @@ SOURCE_BRANCH=$2
 DESTINATION_REPO=$3
 DESTINATION_BRANCH=$4
 
-if ! echo $SOURCE_REPO | grep -Eq ':|@|\.git\/?$'; then
+if [[ $SOURCE_REPO = "." ]]; then
+  if [[ ! -d ".git" ]]; then
+    echo "Source repo not found, check config or if previous step actions/checkout@v2 is set"
+    exit 1
+  elif $(git rev-parse --is-shallow-repository); then
+    echo "Git branch history is shallow, check if actions/checkout@v2 is set with depth: 0"
+    exit 1
+  fi
+elif ! echo $SOURCE_REPO | grep -Eq ':|@|\.git\/?$'; then
   if [[ -n "$SSH_PRIVATE_KEY" || -n "$SOURCE_SSH_PRIVATE_KEY" ]]; then
     SOURCE_REPO="git@github.com:${SOURCE_REPO}.git"
     GIT_SSH_COMMAND="ssh -v"
@@ -28,17 +35,24 @@ fi
 echo "SOURCE=$SOURCE_REPO:$SOURCE_BRANCH"
 echo "DESTINATION=$DESTINATION_REPO:$DESTINATION_BRANCH"
 
-if [[ -n "$SOURCE_SSH_PRIVATE_KEY" ]]; then
-  # Clone using source ssh key if provided
-  git clone -c core.sshCommand="/usr/bin/ssh -i ~/.ssh/src_rsa" "$SOURCE_REPO" /root/source --origin source && cd /root/source
-else
-  git clone "$SOURCE_REPO" /root/source --origin source && cd /root/source
+if [[ $SOURCE_REPO = "." ]]; then
+  echo "Skipping source repo cloning"
+
+  # Pull all branches references down locally so subsequent commands can see them
+  git fetch origin '+refs/heads/*:refs/heads/*' --update-head-ok
+else 
+  if [[ -n "$SOURCE_SSH_PRIVATE_KEY" ]]; then
+    # Clone using source ssh key if provided
+    git clone -c core.sshCommand="/usr/bin/ssh -i ~/.ssh/src_rsa" "$SOURCE_REPO" /root/source --origin source && cd /root/source
+  else
+    git clone "$SOURCE_REPO" /root/source --origin source && cd /root/source
+  fi
+
+  # Pull all branches references down locally so subsequent commands can see them
+  git fetch source '+refs/heads/*:refs/heads/*' --update-head-ok
 fi
 
 git remote add destination "$DESTINATION_REPO"
-
-# Pull all branches references down locally so subsequent commands can see them
-git fetch source '+refs/heads/*:refs/heads/*' --update-head-ok
 
 # Print out all branches
 git --no-pager branch -a -vv
