@@ -6,6 +6,9 @@ SOURCE_BRANCH=$2
 DESTINATION_REPO=$3
 DESTINATION_BRANCH=$4
 
+echo "Debug to check number of commits in branch "
+git rev-list HEAD --count
+
 if [[ $SOURCE_REPO = "." ]]; then
   if [[ ! -d ".git" ]]; then
     echo "Source repo not found, check config or if previous step actions/checkout@v2 is set"
