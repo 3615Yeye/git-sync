@@ -12,7 +12,7 @@ if [[ $SOURCE_REPO = "." ]]; then
     echo "Source repo not found, check config or if previous step actions/checkout@v2 is set"
     exit 1
   elif $(git rev-parse --is-shallow-repository); then
-    echo "Git branch history is shallow, check if checkout is set width depth: 0"
+    echo "Git branch history is shallow, check if actions/checkout@v2 is set with depth: 0"
     exit 1
   fi
 elif ! echo $SOURCE_REPO | grep -Eq ':|@|\.git\/?$'; then
