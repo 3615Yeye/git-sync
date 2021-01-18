@@ -1,5 +1,4 @@
 #!/bin/sh
-
 set -e
 
 SOURCE_REPO=$1
@@ -7,7 +6,9 @@ SOURCE_BRANCH=$2
 DESTINATION_REPO=$3
 DESTINATION_BRANCH=$4
 
-if ! echo $SOURCE_REPO | grep -Eq ':|@|\.git\/?$'; then
+if [[ $SOURCE_REPO = '.' ]] && [[ ! -d ".git" ]] ; then
+    echo "Source repo not found, check config or if previous step actions/checkout@v2 is set"
+elif ! echo $SOURCE_REPO | grep -Eq ':|@|\.git\/?$'; then
   if [[ -n "$SSH_PRIVATE_KEY" || -n "$SOURCE_SSH_PRIVATE_KEY" ]]; then
     SOURCE_REPO="git@github.com:${SOURCE_REPO}.git"
     GIT_SSH_COMMAND="ssh -v"
@@ -15,7 +16,7 @@ if ! echo $SOURCE_REPO | grep -Eq ':|@|\.git\/?$'; then
     SOURCE_REPO="https://github.com/${SOURCE_REPO}.git"
   fi
 fi
-
+d 
 if ! echo $DESTINATION_REPO | grep -Eq ':|@|\.git\/?$'; then
   if [[ -n "$SSH_PRIVATE_KEY" || -n "$DESTINATION_SSH_PRIVATE_KEY" ]]; then
     DESTINATION_REPO="git@github.com:${DESTINATION_REPO}.git"
